@@ -3,7 +3,7 @@ version: 2.1
 jobs:
    lint-dockerfile:
       docker:
-        - image: "docker:docker:18.06.3-ce"
+        - image: "docker:18.06.3-ce"
       steps:
         - checkout
         - run:
@@ -22,15 +22,16 @@ jobs:
             command: "go test -v -short --count=1 $(go list ./...)"
    build-app-karsajobs:
       docker:
-        - image: "docker:docker:18.06.3-ce"
-          auth:
-            username: $CIRCLE_USERNAME
-            password: $PASSWORD_GITHUB_PACKAGES
+        - image: "docker:18.06.3-ce"
       steps:
         - checkout
+        - setup_remote_docker
         - run:
             name: "Build Image"
             command: "docker build . -t ghcr.io/yogi-ra/karsajobs:latest"
+        - run:
+            name: "Login GitHub Packages"
+            command: "echo $PASSWORD_GITHUB_PACKAGES | docker login ghcr.io -u $GITHUB_USERNAME --password-stdin"
         - run:
             name: "Push Image"
             command: "docker push ghcr.io/yogi-ra/karsajobs:latest"
