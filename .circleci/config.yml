@@ -7,14 +7,11 @@ jobs:
       steps:
         - checkout
         - run:
-            name: "Pull image Hadolint"
-            command: "docker pull hadolint/hadolint"
-        - run:
             name: "Linting Dockerfile"
             command: "docker run --rm -it hadolint/hadolint < Dockerfile"
    test-app:
       docker:
-        - image: "golang:1.15-alpine"
+        - image: "cimg/go:1.19.4"
       steps:
         - checkout
         - run:
