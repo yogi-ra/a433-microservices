@@ -8,7 +8,7 @@ jobs:
         - checkout
         - run:
             name: "Linting Dockerfile"
-            command: "docker run --rm --interactive hadolint/hadolint < Dockerfile"
+            command: "docker run --rm --interactive hadolint/hadolint:latest < Dockerfile"
    test-app:
       docker:
         - image: "cimg/go:1.19.4"
