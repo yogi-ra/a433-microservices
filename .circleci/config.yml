@@ -3,15 +3,18 @@ version: 2.1
 jobs:
    lint-dockerfile:
       docker:
-        - image: "hadolint/hadolint"
+        - image: "docker:docker:18.06.3-ce"
       steps:
         - checkout
         - run:
-            name: "Install dan Running Hadolint pada berkas Dockerfile"
-            command: "/bin/hadolint Dockerfile"
+            name: "Pull image Hadolint"
+            command: "docker pull hadolint/hadolint"
+        - run:
+            name: "Linting Dockerfile"
+            command: "docker run --rm -it hadolint/hadolint < Dockerfile"
    test-app:
       docker:
-        - image: golang:1.15-alpine
+        - image: "golang:1.15-alpine"
       steps:
         - checkout
         - run:
@@ -19,15 +22,15 @@ jobs:
             command: "go test -v -short --count=1 $(go list ./...)"
    build-app-karsajobs:
       docker:
-        - image: docker:latest
+        - image: "docker:docker:18.06.3-ce"
+          auth:
+            username: $CIRCLE_USERNAME
+            password: $PASSWORD_GITHUB_PACKAGES
       steps:
         - checkout
         - run:
             name: "Build Image"
             command: "docker build . -t ghcr.io/yogi-ra/karsajobs:latest"
-        - run:
-            name: "Login ke Github Packages"
-            command: "echo $PASSWORD_GITHUB_PACKAGES | docker login ghcr.io -u yogi-ra --password-stdin"
         - run:
             name: "Push Image"
             command: "docker push ghcr.io/yogi-ra/karsajobs:latest"
@@ -38,4 +41,3 @@ workflows:
       - lint-dockerfile
       - test-app
       - build-app-karsajobs
- 
