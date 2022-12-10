@@ -1,0 +1,23 @@
+#Menggunakan kubernetes api v1
+apiVersion: v1
+#Set tipe Service
+kind: Service
+metadata:
+  #Set nama Service
+  name: karsajobs
+  #Set namespace untuk Service karsajobs
+  namespace: stateful-ns
+  #Set label service
+  labels:
+    app: karsajobs
+    tier: backend
+spec:
+  #Menggunakan service tipe NodePort agar dapat ekspos port ke node
+  type: NodePort
+  ports:
+    - port: 8080
+      #ekspos ke port 32017
+      nodePort: 32017
+  selector:
+    app: karsajobs
+    tier: backend

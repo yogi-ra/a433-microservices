@@ -1,0 +1,14 @@
+#Menggunakan kubernetes api v1
+apiVersion: v1
+#Set tipe ConfigMap
+kind: ConfigMap
+metadata:
+  #set nama ConfigMap
+  name: mongodb-configmap
+  #set namespace ConfigMap
+  namespace: stateful-ns
+data:
+  #config mongo.conf dengan storage: dbPath: /data/db
+  mongo.conf: |
+    storage:
+      dbPath: /data/db

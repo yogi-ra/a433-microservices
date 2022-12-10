@@ -1,0 +1,49 @@
+#Menggunakan kubernetes api v1
+apiVersion: v1
+#set tipe PersistentVolume
+kind: PersistentVolume
+metadata:
+    #set nama mongodb-pv
+    name: mongodb-pv
+    #set namespace untuk mongodb-pv
+    namespace: stateful-ns
+    #set label dengan tipe local
+    labels:
+      type: local
+spec:
+  #spesifikasi storageClassName manual
+  storageClassName: manual
+  #kapasitas 20Gibibyte
+  capacity:
+    storage: 20Gi
+  volumeMode: Filesystem
+  #Menggunakan akses mode ReadWriteOnce
+  accessModes:
+    - ReadWriteOnce
+  #lokasi persistent volume pada /data/db
+  hostPath:
+    path: /data/db
+---
+
+#Menggunakan kubernetes api v1
+apiVersion: v1
+#set tipe PersistentVolumeClaim
+kind: PersistentVolumeClaim
+metadata:
+  #set nama untuk PersistentVolumeClaim dan label nya
+  name: mongodb-pvc
+  labels:
+    app: database
+  #set namespace untuk mongodb-pvc
+  namespace: stateful-ns
+spec:
+  #spesifikasi storageClassName manual
+  storageClassName: manual
+  #Menggunakan akses mode ReadWriteOnce
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  # memakai seluruh kapasitas available dari PersistentVolume
+  resources:
+    requests:
+      storage: 20Gi

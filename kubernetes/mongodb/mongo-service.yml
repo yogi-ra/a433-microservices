@@ -1,0 +1,20 @@
+#Menggunakan kubenetes api version v1
+apiVersion: v1
+#set tipe Service
+kind: Service
+metadata:
+  #nama service mongodb
+  name: mongodb
+  #set namespace untuk service mongodb dan labelnya
+  namespace: stateful-ns
+  labels:
+    app: database
+spec:
+  #definisikan port mongodb dengan clusterIP: None
+  ports:
+    - port: 27017
+  selector:
+    #Menggunakan resource dari app: database
+    app: database
+    tier: backend
+  clusterIP: None

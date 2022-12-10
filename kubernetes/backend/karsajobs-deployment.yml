@@ -1,0 +1,49 @@
+#Menggunakan kubernetes api apps/v1
+apiVersion: apps/v1
+#Set tipe Deployment
+kind: Deployment
+metadata:
+  #set nama Deployment
+  name: karsajobs
+  #set namespace untuk deployment karsajobs
+  namespace: stateful-ns
+  #set labels untuk karsajobs
+  labels:
+    app: karsajobs
+    tier: backend
+spec:
+  #Menggunakan 1 replica
+  replicas: 1
+  selector:
+  #Menggunakan resource app: karsajobs
+    matchLabels:
+      app: karsajobs
+      tier: backend
+  #Set template untuk pod
+  template:  
+    metadata:
+      labels:
+        app: karsajobs
+        tier: backend
+    spec:
+      #Set nama container, image, containerPort, dan environment variable
+      containers:
+      - name: karsajobs
+        image: ghcr.io/yogi-ra/karsajobs:latest
+        ports:
+          - containerPort: 8080
+        env:
+          - name: APP_PORT
+            value: "8080"
+          - name: MONGO_HOST
+            value: "mongodb"
+          - name: MONGO_USER
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: MONGO_ROOT_USERNAME
+          - name: MONGO_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mongodb-secret
+                key: MONGO_ROOT_PASSWORD

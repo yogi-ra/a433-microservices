@@ -1,0 +1,65 @@
+#Menggunakan kubernetes api apps/v1
+apiVersion: apps/v1
+#Set tipe StatefulSet
+kind: StatefulSet
+metadata:
+  #set nama StatefulSet
+  name: mongodb
+  #set namespace untuk StatefulSet mongodb
+  namespace: stateful-ns
+spec:
+  #set nama untuk pod
+  serviceName: mongodb
+  #Menggunakan 1 replica
+  replicas: 1
+  selector:
+    matchLabels:
+      #Menggunakan resource dari app: database
+      app: database
+      tier: backend
+  #Membuat template untuk pod mongodb
+  template:
+    metadata:
+      labels:
+      #Menggunakan resource dari app: database
+        app: database
+        tier: backend
+    spec:
+      containers:
+      #Set nama pod, image, dan containerPort
+      - name: mongodb
+        image: mongo:6.0.3
+        ports:
+          - containerPort: 27017
+      #Set environment variable untuk mongo_root_username dan password file
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME_FILE
+            value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+          - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+            value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+        volumeMounts:
+      #set mongodb-configmap mount point
+        - name: mongodb-configmap
+          mountPath: /config
+      #set directory database mongodb
+        - name: mongodb-data
+          mountPath: /data/db
+      #set mongodb-secret mount poin
+        - name: mongodb-secret
+          mountPath: /etc/mongo-credentials
+      volumes:
+      #Mendefinisikan volume dengan nama mongodb-secret dari tipe Secret dengan nama mongodb-secret
+      - name: mongodb-secret
+        secret:
+          secretName: mongodb-secret
+      #Mendefinisikan volume mongodb-configmap
+      - name: mongodb-configmap
+        configMap:
+          name: mongodb-configmap
+          items:
+          - key: mongo.conf
+            path: mongo.conf
+      #Mendefinisikan volume pvc untuk pod
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
