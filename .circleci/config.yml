@@ -35,7 +35,7 @@ jobs:
             command: "docker push ghcr.io/yogi-ra/karsajobs:latest"
 
 workflows:
-  lint-dockerfile-workflow:
+  lint-test-build-push-workflow:
     jobs:
       - lint-dockerfile
       - test-app
