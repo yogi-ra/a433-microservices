@@ -1,0 +1,41 @@
+version: 2.1
+
+jobs:
+   lint-dockerfile:
+      docker:
+        - image: "hadolint/hadolint"
+      steps:
+        - checkout
+        - run:
+            name: "Install dan Running Hadolint pada berkas Dockerfile"
+            command: "/bin/hadolint Dockerfile"
+   test-app:
+      docker:
+        - image: golang:1.15-alpine
+      steps:
+        - checkout
+        - run:
+            name: "Menjalankan unit test untuk backend"
+            command: "go test -v -short --count=1 $(go list ./...)
+   build-app-karsajobs:
+      docker:
+        - image: docker:latest
+      steps:
+        - checkout
+        - run:
+            name: "Build Image"
+            command: "docker build . -t ghcr.io/yogi-ra/karsajobs:latest
+        - run:
+            name: "Login ke Github Packages"
+            command: "echo $PASSWORD_GITHUB_PACKAGES | docker login ghcr.io -u yogi-ra --password-stdin"
+        - run:
+            name: "Push Image"
+            command: "docker push ghcr.io/yogi-ra/karsajobs:latest"
+
+workflows:
+  lint-dockerfile-workflow:
+    jobs:
+      - lint-dockerfile
+      - test-app
+      - build-app-karsajobs
+ 
