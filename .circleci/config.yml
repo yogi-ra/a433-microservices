@@ -24,7 +24,7 @@ jobs:
         - checkout
         - run:
             name: "Build Image"
-            command: "docker build . -t ghcr.io/yogi-ra/karsajobs:latest
+            command: "docker build . -t ghcr.io/yogi-ra/karsajobs:latest"
         - run:
             name: "Login ke Github Packages"
             command: "echo $PASSWORD_GITHUB_PACKAGES | docker login ghcr.io -u yogi-ra --password-stdin"
